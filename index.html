@@ -1,136 +1,156 @@
 <!DOCTYPE html>
 <html><head>
-	<title>Shamrock Search</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-	<meta charset="utf-8">
-	<link rel="stylesheet" href="css/main.css" type="text/css" />
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-	<script type="text/javascript" charset="utf-8" src="js/global.js"></script>
-	<script type="text/javascript" charset="utf-8" src="js/index.js"></script>
-	<script type="text/javascript" charset="utf-8" src="js/game.js"></script>
-	<script type="text/javascript">
-		function checkSetup() {
-			console.log('Should we save to local schema? or just a JSON string in browser cache?');
-			ensureSchema();
-			potentialResize();
-		}
-	</script>
+  <title>Shamrock Search</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="css/shamrock_search.css?v=1c" type="text/css" />
+  <script type="text/javascript" charset="utf-8" src="js/shamrock_search.js?v=1c"></script>
 </head>
-<body onload="checkSetup()" style="font-size:140%;">
-	<!-- View Card 1 - Menus and Settings -->
-	<div id="view1" class="viewCard">
-		<table class="menuT"><tr><td>
-			<h2>Shamrock Search</h2>
-		</td></tr></table>
-		<br/><br/>
+<body onload="init()" style="font-size:140%;">
+  <!-- View Card 0 - Menus and Settings -->
+  <div id="view0" class="viewCard">
+    <div class="menuT" style="text-align:center;"><h2>Shamrock Search</h2></div>
+    <br/>
 
-		<div style="text-align:center;">
-			Difficulty:<br/>
-			<button onclick="bToggle(this);" id="d">Medium</button><br/><br/>
-			<button onclick="showRecords()">High Scores</button><br/><br/>
-			<button onclick="view(2)">How to Play</button>
-		</div>
+    <div style="text-align:center;">
+      Difficulty:<br/>
+      <button onclick="bToggle(this);" id="d">Medium</button><br/><br/>
+      <button onclick="showRecords()">High Scores</button><br/><br/>
+      <button onclick="view(1)">How to Play</button><br/><br/>
+      <button onclick="window.location.href='https://cynic.tv/a/support'">Support</button>
+    </div>
+    <br/><br/>
 
-		<table class="menuT footer"><tr><td style="width:50%;">
-			<div style="text-align:center;width:100%;">
-				<span onclick="muteOn()" id="muteon" class="muteBtn">
-					<img src="img/unmuted.png" class='imgM' /><br/>
-					Sound On
-				</span>
-				<span onclick="muteOff()" id="muteoff" class="muteBtn invisible">
-					<img src="img/muted.png" class='imgM' /><br/>
-					Muted
-				</span>
-      	</div>
-		</td><td style="width:50%;">
-			<div style="text-align:center;width:100%;">
-				<img src="img/start.png" onclick="startGame()" class='imgM' /><br/>
-				Start
-			</div>
-		</td></tr></table>
-	</div>
+    <table class="menuT footer"><tr><td style="width:50%;"><tr><td>
+      <div style="text-align:center;width:100%;">
+        <span onclick="muteOn()" id="muteon" class="muteBtn">
+          <div class="coin"><img src="img2/unmuted.png" /></div>
+		  <br/>
+          Sound On
+        </span>
+        <span onclick="muteOff()" id="muteoff" class="muteBtn invisible">
+          <div class="coin"><img src="img2/muted.png" /></div>
+		  <br/>
+          Muted
+        </span>
+        </div>
+    </td><td>
+      <a href="https://cynic.tv/a/fun">More<br/>Games</a>
+    </td><td style="width:50%;">
+      <div style="text-align:center;width:100%;">
+        <div class="coin" onclick="gameStart()"><img src="img2/start.png" /></div>
+        <br/>
+        Start
+      </div>
+    </td>
+	</tr></table>
+  </div>
 
-	<!-- View Card 2 - How to Play -->
-	<div id="view2" class="viewCard invisible">
-		<div class="menuT" style="margin-bottom:8px;">
-			<img src="img/back.png" onclick="view(1);" class='imgM' style="margin-top:-9px;" />
-			<h2 style="display:inline-block;">How to Play</h2>
-		</div>
+  <!-- View Card 1 - How to Play -->
+  <div id="view1" class="viewCard invisible">
+    <div class="menuT">
+      <div class="coin" onclick="view(0)"><img src="img2/back.png" /></div>
+      <h2>How to Play</h2>
+    </div>
 
-		<h3>Objective:</h3>
-		<p>Get as many points as possible by finding Shamrocks &amp; avoiding Leprechauns</p>
-		<p>Shamrocks earn you points</p>
-		<p>Each second you lose points</p>
-		<p>&amp; Leprechauns end the game</p>
-		<p>If you find all of the Shamrocks, you will get a Win-Bonus</p>
-		<br/>
+    <h3>Objective:</h3>
+    Find <div class="displayCell"><img src="img2/good.svg" /></div> to score.
+	Avoid <div class="displayCell"><img src="img2/bad.svg" /></div> or the game ends.
+	<br/>
 
-		<h3>Numbers:</h3>
-		<p>Positive numbers are Good. It means shamrocks are near (e.g. 3 means that in the surrounding 8 squares, 3 are shamrocks)</p>
-		<p>Negative numbers are Bad. It means leprechauns are near (e.g. -3 means that in the surrounding 8 squares, 3 are leprechauns)</p>
-		<p>Empty squares mean that there are neither shamrocks nor leprechauns in any of the surrounding 8 squares</p>
-		<br/>
+    Hurry, because each second you lose points.
+	<br/>
 
-		<h3>Cancellation:</h3>
-		<p>Numbers can cancel each-other. So a 1 means that in the surrounding squares there is <i>1 more</i> shamrock than there are leprechauns (e.g. could mean there are 4 shamrocks and 3 leprechauns all touching this square)</p>
-		<p>0 is <i>NOT</i> the same as an empty square. 0 indicates that there are the <i>same number</i> of shamrocks &amp; leprechauns touching this square</p>
-		<br/>
+    Find all <div class="displayCell"><img src="img2/good.svg" /></div> to earn a Win-Bonus.
+    <br/><br/>
 
-		<h3>Difficulty &amp; Scoring:</h3>
-		<p>The difficulty you select determines how many points you start with, how fast the counter clock is, how much bonuses are worth, and how many Shamrocks &amp; Leprechauns there are on the board</p>
-		<p>The higher the difficulty, the higher it is possible to score</p>
-		<p>Easy will reveal the center 4 squares, unless there is a leprechaun or shamrock in one</p>
-		<p>Medium will reveal 2 of the center 4 squares, unless there are more than 2 leprechauns or shamrocks in those squares</p>
-		<br/>
-	</div>
+    <h3>Numbers:</h3>
+    Positive numbers mean <div class="displayCell"><img src="img2/good.svg" /></div> are near.<br/>
+    Negative indicate <div class="displayCell"><img src="img2/bad.svg" /></div><br/>
+    Empty squares mean there are neither around.
+	<br/><br/>
 
-	<!-- View Card 3 - Gameplay Screen -->
-	<div id="view3" class="viewCard invisible">
-		<table class='menuT' style="margin-bottom:10px;"><tr><td style="width:50px;">
-			<img src="img/home.png" onclick="doHome();" class="imgM" />
-		</td><td>
-			<span id="status1">
-				<span id="numS"></span> Shamrocks Left<br/>
-				<span id="numL"></span> Leprechauns
-			</span>
-			<span id="status2" class="invisible"></span>
-		</td><td>
-			<span id="restart" class="invisible"><img src="img/play.png" onclick="restart();" class="imgM" /></span>
-		</td></tr></table>
+    <h3>Cancellation:</h3>
+    Positives and Negatives cancel.<br/>
+    A <div class="displayCell"><span style="color:#C41D2E">-3</span></div>
+	means <i>3 more</i>
+	<div class="displayCell"><img src="img2/bad.svg" /></div>
+	than <div class="displayCell"><img src="img2/good.svg" /></div>
+	<br/>
 
-		Score: <span id="points"></span>
-		<div id="grid"></div>
-		Time: <span id="timer">0:00</span>
+    A <div class="displayCell"><span style="color:#7AD1FF">2</span></div>
+	means <i>2 more</i>
+	<div class="displayCell"><img src="img2/good.svg" /></div>
+	than <div class="displayCell"><img src="img2/bad.svg" /></div>
+	<br/>
 
-		<table class="menuT footer"><tr><td style="text-align:center;">
-			<span id='textDiff'></span> Record: <span id="high"></span>
-		</td></tr></table>
-	</div>
+    A <div class="displayCell"><span style="color:#F7BC5C">0</span></div>
+	means there are the <i>same number</i> of
+	<div class="displayCell"><img src="img2/good.svg" /></div>
+	&amp; <div class="displayCell"><img src="img2/bad.svg" /></div>
+	touching this square.
+    <br/><br/>
 
-	<!-- View Card 4 - High Scores -->
-	<div id="view4" class="viewCard invisible">
-		<div class="menuT" style="margin-bottom:8px;">
-			<img src="img/back.png" onclick="view(1);" class='imgM' style="margin-top:-9px;" />
-			<h2 style="display:inline-block;">High Scores</h2>
-		</div><br/><br/>
+    <h3>Difficulty &amp; Scoring:</h3>
+    Higher difficulty starts you with more points &amp; increases Win-Bonuses, but you lose points more quickly and there are more
+	<div class="displayCell"><img src="img2/good.svg" /></div>
+	&amp; <div class="displayCell"><img src="img2/bad.svg" /></div>
+	<br/>
 
-		<table id="records"><thead><tr><th>Difficulty</th><th>Score</th></tr></thead><tbody>
-			<tr><td>Easy</td><td id='record1'></td></tr>
-			<tr><td>Medium</td><td id='record2'></td></tr>
-			<tr><td>Hard</td><td id='record3'></td></tr>
-			<tr><td>Insane</td><td id='record4'></td></tr>
-		</tbody></table>
-	</div>
+    Easy/Medium reveal some center squares, unless there's a
+	<div class="displayCell"><img src="img2/good.svg" /></div>
+	or <div class="displayCell"><img src="img2/bad.svg" /></div>
+	there.
+    <br/><br/>
+  </div>
 
-	<!-- Invisible Audio Pane for sounds -->
-	<div id="audioPane" class="invisible">
-		<audio id="wav_beep"><source src="wav/beep.wav" type="audio/wav"></audio>
-		<audio id="wav_err"><source src="wav/err.wav" type="audio/wav"></audio>
-		<audio id="wav_music"><source src="wav/music.wav" type="audio/wav"></audio>
-		<!-- buttons to test sound -->
-		<button onclick="wav('beep')">Test Beep</button>
-		<button onclick="wav('err')">Test Err</button>
-		<button onclick="wav('music')">Test Music</button>
-	</div>
+  <!-- View Card 2 - Gameplay Screen -->
+  <div id="view2" class="viewCard invisible">
+    <table class='menuT'><tr>
+      <td class="coin" onclick="doHome()"><img src="img2/home.png" /></td>
+      <td>
+        <span id="status0">
+          <span id="numS"></span> Shamrocks Left<br/>
+          <span id="numL"></span> Leprechauns
+        </span>
+        <span id="status1" class="invisible"></span>
+      </td>
+	  <td id="restart" class="coin" onclick="gameRestart()"><img src="img2/play.png" /></td>
+    </tr></table>
+
+    Score: <span id="points"></span>
+    <div id="grid"></div>
+    Time: <span id="timer">0:00</span>
+
+    <table class="menuT footer"><tr><td style="text-align:center;padding-bottom:35px;">
+      <span id='textDiff'></span> Record: <span id="high"></span>
+    </td></tr></table>
+  </div>
+
+  <!-- View Card 3 - High Scores -->
+  <div id="view3" class="viewCard invisible">
+    <div class="menuT" style="margin-bottom:8px;">
+      <div class="coin" onclick="view(0)"><img src="img2/back.png" /></div>
+      <h2>High Scores</h2>
+    </div><br/><br/>
+
+    <table id="records"><thead><tr><th>Difficulty</th><th>Score</th></tr></thead><tbody>
+      <tr><td>Easy</td><td id='record0'></td></tr>
+      <tr><td>Medium</td><td id='record1'></td></tr>
+      <tr><td>Hard</td><td id='record2'></td></tr>
+      <tr><td>Insane</td><td id='record3'></td></tr>
+    </tbody></table>
+  </div>
+
+  <!-- Invisible Audio Pane for sounds -->
+  <div id="audioPane" class="invisible">
+    <audio id="wav_beep"><source src="mp3/beep.mp3?v=1a" type="audio/mp3"></audio>
+    <audio id="wav_err"><source src="mp3/err.mp3?v=1a" type="audio/mp3"></audio>
+    <audio id="wav_music"><source src="mp3/music.mp3?v=1a" type="audio/mp3"></audio>
+    <!-- buttons to test sound -->
+    <button onclick="wav('beep')">Test Beep</button>
+    <button onclick="wav('err')">Test Err</button>
+    <button onclick="wav('music')">Test Music</button>
+  </div>
 </body>
 </html>
